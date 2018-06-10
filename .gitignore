@@ -1,0 +1,3 @@
+logs/error_log
+vendor
+composer.lock

@@ -1,0 +1,32 @@
+{
+    "name": "symplicity/public-api-client",
+    "description": "",
+    "license": "proprietary",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.symplicity.com"
+        }
+    ],
+    "require": {
+        "php" : "^7.1",
+        "slim/slim" : "3.7.*",
+        "slim/http-cache" : "0.3.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "symplicity/exception": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Symplicity\\PublicApiClient\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "files": [
+            "src/bootstrap.php"
+        ],
+        "psr-4": {
+            "Symplicity\\PublicApiClient\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev"
+}
