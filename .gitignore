@@ -1,3 +1,4 @@
-logs/error_log
+local/config.inc
 vendor
 composer.lock
+logs/error_log

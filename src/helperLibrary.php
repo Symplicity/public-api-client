@@ -1,10 +1,7 @@
 <?php
 function getClient()
 {
-    //$token = $c['Symplicity\CSM\TokenAuthenticationAdapter']->getInternalToken();
-    $token = 'xTJR41Ix+kckhOtgJPc8d22OJ3baUsklK4OB4Ap4YjG6d3CoPHi0CIiQddzSbMHD+agk+TbvGV1I10uT4s/j3lS/eeWEaQ5t7gAp9xZ3mcZ0MUXuJ74SRKz4ROaXkY9R609z4Agegx5Oftnpj3pzxw==';
-    $client = new Symplicity\PublicApiClient\ApiClient('http://dbocevski.csmgit.dev7.symplicity.com', $token);
-    return $client;
+    return new Symplicity\PublicApiClient\ApiClient(API['INSTANCE'], API['TOKEN']);
 }
 
 function outputResults($label, $data)
