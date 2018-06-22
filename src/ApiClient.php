@@ -6,11 +6,10 @@ class ApiClient
     private $instance;
     private $token;
     private $client;
-    private $errors;
 
     public function __construct($instance, $token)
     {
-        $this->instance = $instance;
+        $this->setInstance($instance);
         $this->token = $token;
     }
 
@@ -41,7 +40,10 @@ class ApiClient
                 $params = ['query' => $params];
             }
             $params['headers'] = $this->getHeaders();
-            $response = $this->client->get($this->prepareRouteUrl($route), $params);
+
+            $url = $this->prepareRouteUrl($route);
+
+            $response = $this->client->get($url, $params);
             $httpCode = $response->getStatusCode();
             if ($httpCode === 200) {
                 return $this->decodeOutput($response);
@@ -63,14 +65,11 @@ class ApiClient
                 'json' => $data
             ];
 
-            $url = $this->prepareRouteUrl($route);
-            if (!empty($args['bulk'])) {
-                $url .= '?bulk=1';
-            }
+            $url = $this->prepareRouteUrl($route, $args);
 
             $response = $this->client->post($url, $params);
             $httpCode = $response->getStatusCode();
-            if (in_array($httpCode, array(200, 201))) {
+            if (in_array($httpCode, [200, 201])) {
                 return $this->decodeOutput($response);
             }
             throw $this->getException($response);
@@ -86,9 +85,13 @@ class ApiClient
         }
     }
 
-    private function prepareRouteUrl($route)
+    private function prepareRouteUrl($route, array $args = [])
     {
-        return "{$this->instance}/api/public/v1/$route";
+        $url = "{$this->instance}/api/public/v1/$route";
+        if (!empty($args['bulk'])) {
+            $url .= '?bulk=1';
+        }
+        return $url;
     }
 
     private function getHeaders()
@@ -114,24 +117,14 @@ class ApiClient
         return ($string != strip_tags($string));
     }
 
-    /**
-     * If (and only if) the entire $in parameter is enclosed in single or double quotes, strip them
-     *
-     * @param string $in
-     * @return string
-     **/
-    public function deQuote($in)
+    private function setInstance($url)
     {
-        $_first = substr($in, 0, 1);
-        $_last = substr($in, -1, 1);
-        if ($_first == $_last && ($_first == '"' || $_first == '\'')) {
-            $in = substr($in, 1, strlen($in) - 2);
-        }
-        return $in;
+        $this->instance = rtrim($url, ' /');
     }
 
     private function getException($response)
     {
-        return new \Symplicity\PublicApiClient\ApiException($response->getBody()->getContents(), $response->getStatusCode());
+        $e = new \Symplicity\PublicApiClient\ApiException($response->getBody()->getContents(), $response->getStatusCode());
+        return $e;
     }
 }
