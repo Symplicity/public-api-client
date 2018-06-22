@@ -119,10 +119,7 @@ class ApiClient
 
     private function setInstance($url)
     {
-        $this->instance = $url;
-        if (substr($this->instance, -1) === '/') {
-            $this->instance = substr($this->instance, 0, strlen($this->instance) - 1);
-        }
+        $this->instance = rtrim($url, ' /');
     }
 
     private function getException($response)
