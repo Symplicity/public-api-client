@@ -8,15 +8,29 @@ class ApiException extends \Exception
     public function __construct($message, $code = 0, Exception $previous = null)
     {
         if ($this->isHtml($message)) {
+            // When our server results in some very general 'on-screen' error
             $message = substr($message, strpos($message, '<title>') + strlen('<title>'));
             $error = substr($message, 0, strpos($message, '</title>'));
         } else {
             $errors = json_decode($message, true);
-            if (isset($errors['errors'])) {
-                $error = 'Write Error';
-                $this->errors = $errors['errors'];
+            if ($errors) {
+                if (isset($errors['errors'])) {
+                    // Legitimate API write errors caused by validations, etc.
+                    $error = 'Write Error';
+                    $this->errors = $errors['errors'];
+                } elseif (
+                    // app Controller::outputError/outputMessage
+                    isset($errors['messages']) &&
+                    isset($errors['messages'][0]) &&
+                    isset($errors['messages'][0]['type']) &&
+                    $errors['messages'][0]['type'] == 'error'
+                ) {
+                    $error = $errors['messages'][0]['text'];
+                } else {
+                    $error = $this->deQuote($errors);
+                }
             } else {
-                $error = $this->deQuote($errors);
+                $error = $this->deQuote($message);
             }
         }
 
@@ -39,7 +53,7 @@ class ApiException extends \Exception
     }
 
     /**
-     * If (and only if) the entire $in parameter is enclosed in single or double quotes, strip them
+     * If (and only if) the entire $string is enclosed in single or double quotes, strip them
      **/
     private function deQuote($string)
     {
