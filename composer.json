@@ -12,7 +12,7 @@
         "php" : "^7.1",
         "slim/slim" : "3.7.*",
         "slim/http-cache" : "0.3.0",
-        "guzzlehttp/guzzle": "^6.2",
+        "guzzlehttp/guzzle": "^6.2 || ^7.2",
         "symplicity/exception": "*"
     },
     "autoload": {
